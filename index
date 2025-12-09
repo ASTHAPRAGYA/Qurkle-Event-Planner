@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Qurkle | Curated Chemistry Events</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #050509;
+      --bg-soft: #101016;
+      --card: #111119;
+      --accent: #f5d38c;
+      --accent-soft: rgba(245, 211, 140, 0.12);
+      --accent-strong: #e3b55b;
+      --text-main: #f7f7f7;
+      --text-muted: #a0a0b0;
+      --border-subtle: rgba(245, 211, 140, 0.25);
+      --danger: #ff4b6b;
+      --radius-lg: 18px;
+      --shadow-soft: 0 28px 80px rgba(0, 0, 0, 0.65);
+      --transition-fast: 0.18s ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 0 0, #1a1328 0, #050509 40%, #020208 100%);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Layout ---- */
+    header {
+      padding: 22px clamp(22px, 5vw, 40px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(245, 211, 140, 0.12);
+      backdrop-filter: blur(20px);
+      background: linear-gradient(to right, rgba(5,5,9,0.9), rgba(5,5,9,0.55));
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .brand-name {
+      font-family: "Playfair Display", serif;
+      font-size: 20px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .brand-tag {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .header-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chip-soft {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(245, 211, 140, 0.18);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .btn-outline {
+      border-radius: 999px;
+      border: 1px solid var(--accent-soft);
+      padding: 8px 18px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      background: transparent;
+      color: var(--accent);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .btn-outline:hover {
+      background: rgba(245, 211, 140, 0.1);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    main {
+      flex: 1;
+      padding: 28px clamp(22px, 5vw, 40px) 36px;
+      max-width: 1120px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.1fr);
+      gap: 32px;
+    }
+
+    @media (max-width: 880px) {
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+      }
+
+      .header-cta {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
+    /* ---- Left column: Hero & Locations ---- */
+
+    .hero {
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .hero-title {
+      font-family: "Playfair Display", serif;
+      font-weight: 600;
+      font-size: clamp(30px, 4vw, 36px);
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .hero-title span {
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 420px;
+      line-height: 1.6;
+    }
+
+    .location-wrap {
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(17,17,25,0.95), rgba(8,8,13,1));
+      border: 1px solid rgba(245,211,140,0.22);
+      padding: 18px 18px 6px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+      gap: 12px;
+    }
+
+    .section-heading h2 {
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .section-heading span {
+      font-size: 11px;
+      color: var(--accent-strong);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+    }
+
+    .location-grid {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .location-card {
+      border-radius: 999px;
+      padding: 10px 14px;
+      border: 1px solid rgba(245,211,140,0.12);
+      background: rgba(10,10,16,0.8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .location-card-main {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .location-name {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .location-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .location-chip {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(245,211,140,0.06);
+      border: 1px solid rgba(245,211,140,0.24);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    .location-card:hover {
+      background: rgba(245,211,140,0.06);
+      transform: translateY(-1px);
+      border-color: rgba(245,211,140,0.35);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.55);
+    }
+
+    .location-card.active {
+      background: linear-gradient(90deg, rgba(245,211,140,0.12), rgba(5,5,9,1));
+      border-color: var(--accent);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    }
+
+    /* ---- Activities panel ---- */
+
+    .panel {
+      border-radius: var(--radius-lg);
+      background: rgba(6, 6, 10, 0.96);
+      border: 1px solid rgba(245,211,140,0.24);
+      padding: 18px 18px 18px;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      min-height: 320px;
+      position: relative;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    .panel-title {
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .panel-subtitle {
+      font-size: 12px;
+      color: var(--accent-strong);
+    }
+
+    .activity-list {
+      list-style: none;
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .activity-card {
+      border-radius: 14px;
+      padding: 11px 12px;
+      border: 1px solid rgba(245,211,140,0.14);
+      background: rgba(14, 14, 22, 0.94);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .activity-card-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .activity-name {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .activity-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .activity-pill {
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(245,211,140,0.22);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent);
+    }
+
+    .activity-card:hover {
+      background: rgba(245,211,140,0.06);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .activity-card.primary {
+      border-color: var(--accent);
+      background: linear-gradient(90deg, rgba(245,211,140,0.10), rgba(10,10,16,0.96));
+    }
+
+    .panel-empty {
+      margin-top: 40px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    /* ---- Detail view ---- */
+
+    .detail-view {
+      margin-top: 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(245,211,140,0.18);
+      background: radial-gradient(circle at top left, rgba(245,211,140,0.08), rgba(6,6,10,0.96));
+      padding: 14px 14px 16px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .detail-view.active {
+      display: flex;
+    }
+
+    .detail-heading-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .detail-title {
+      font-family: "Playfair Display", serif;
+      font-size: 18px;
+    }
+
+    .detail-tagline {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      gap: 16px;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 720px) {
+      .detail-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .detail-block-title {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .detail-text {
+      font-size: 13px;
+      color: var(--text-main);
+      line-height: 1.55;
+    }
+
+    .detail-text ul {
+      list-style: none;
+      margin-top: 6px;
+    }
+
+    .detail-text li {
+      margin-bottom: 4px;
+      color: var(--text-muted);
+      position: relative;
+      padding-left: 16px;
+    }
+
+    .detail-text li::before {
+      content: "✦";
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: 10px;
+      color: var(--accent);
+    }
+
+    .table {
+      border-radius: 12px;
+      border: 1px solid rgba(245,211,140,0.2);
+      background: rgba(4,4,8,0.8);
+      font-size: 12px;
+      overflow: hidden;
+    }
+
+    .table-header, .table-row {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1.3fr;
+      padding: 8px 10px;
+      gap: 8px;
+    }
+
+    .table-header {
+      background: rgba(245,211,140,0.08);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .table-row:nth-child(odd) {
+      background: rgba(10,10,15,0.8);
+    }
+
+    .table-cell-muted {
+      color: var(--text-muted);
+    }
+
+    .souvenir-box {
+      border-radius: 12px;
+      border: 1px dashed rgba(245,211,140,0.45);
+      padding: 10px 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: rgba(4,4,7,0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .souvenir-box span {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .souvenir-quote {
+      font-style: italic;
+      color: var(--text-main);
+    }
+
+    .detail-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .detail-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .btn-primary {
+      border-radius: 999px;
+      border: none;
+      padding: 9px 22px;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      background: linear-gradient(120deg, var(--accent-strong), #fff0c2);
+      color: #17151b;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.7);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.8);
+    }
+
+    .btn-primary span {
+      font-size: 16px;
+    }
+
+    /* ---- Modal ---- */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.78);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 40;
+      padding: 18px;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal {
+      max-width: 420px;
+      width: 100%;
+      border-radius: 18px;
+      background: radial-gradient(circle at top, rgba(245,211,140,0.18), rgba(6,6,10,0.96));
+      border: 1px solid rgba(245,211,140,0.45);
+      box-shadow: 0 30px 90px rgba(0,0,0,0.85);
+      padding: 20px 20px 18px;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      right: 14px;
+      top: 10px;
+      font-size: 18px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    .modal-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .modal-title {
+      font-family: "Playfair Display", serif;
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .modal-body {
+      font-size: 13px;
+      color: var(--text-main);
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .modal-body span {
+      color: var(--accent-strong);
+    }
+
+    .modal-footer {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    footer {
+      padding: 14px clamp(22px, 5vw, 40px) 26px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(245,211,140,0.12);
+      gap: 10px;
+    }
+
+    .footer-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .footer-right span {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="brand">
+      <div class="brand-mark">Q</div>
+      <div>
+        <div class="brand-name">QURKLE</div>
+        <div class="brand-tag">CURATED CHEMISTRY ✨</div>
+      </div>
+    </div>
+    <div class="header-cta">
+      <div class="chip-soft">Mira · Delhi · 2025</div>
+      <button class="btn-outline" type="button">
+        <span>💎</span> Inner Circle Login
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- LEFT SIDE: Hero + Locations -->
+    <section>
+      <div class="hero">
+        <div class="eyebrow">Live events · Delhi 2025</div>
+        <h1 class="hero-title">
+          Chemistry, <span>curated</span> — not left to chance.
+        </h1>
+        <p class="hero-sub">
+          Choose your festival or venue, then let Mira guide you to
+          the most luxurious offline dating experiences in the city.
+        </p>
+      </div>
+
+      <div class="location-wrap">
+        <div class="section-heading">
+          <h2>Choose your location</h2>
+          <span>Tap to explore</span>
+        </div>
+        <ul class="location-grid" id="locationList">
+          <li class="location-card" data-location="boho">
+            <div class="location-card-main">
+              <div class="location-name">Boho Fest — JLN Stadium</div>
+              <div class="location-meta">open-air · music · art</div>
+            </div>
+            <div class="location-chip">coming soon</div>
+          </li>
+          <li class="location-card active" data-location="zomaland">
+            <div class="location-card-main">
+              <div class="location-name">Zomaland — Delhi</div>
+              <div class="location-meta">food carnivals · live sets</div>
+            </div>
+            <div class="location-chip">view events</div>
+          </li>
+          <li class="location-card" data-location="sunburn">
+            <div class="location-card-main">
+              <div class="location-name">Sunburn After-Party — DLF Avenue Saket</div>
+              <div class="location-meta">after-hours · house &amp; techno</div>
+            </div>
+            <div class="location-chip">coming soon</div>
+          </li>
+          <li class="location-card" data-location="hornok">
+            <div class="location-card-main">
+              <div class="location-name">Horn OK Please — Air Force Station</div>
+              <div class="location-meta">food trucks · indie gigs</div>
+            </div>
+            <div class="location-chip">coming soon</div>
+          </li>
+          <li class="location-card" data-location="comiccon">
+            <div class="location-card-main">
+              <div class="location-name">Comic Con — NSIC Okhla</div>
+              <div class="location-meta">cosplay · fandom</div>
+            </div>
+            <div class="location-chip">coming soon</div>
+          </li>
+          <li class="location-card" data-location="weddingasia">
+            <div class="location-card-main">
+              <div class="location-name">Wedding Asia Expo — Pragati Maidan</div>
+              <div class="location-meta">fashion · luxury weddings</div>
+            </div>
+            <div class="location-chip">coming soon</div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- RIGHT SIDE: Activities + Detail -->
+    <section class="panel" id="activitiesPanel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Zomaland · Mira x Qurkle</div>
+          <div class="panel-subtitle">Signature chemistry experiences ✨</div>
+        </div>
+      </div>
+
+      <ul class="activity-list" id="zomalandActivities">
+        <li class="activity-card" data-activity="eyelock">
+          <div class="activity-card-main">
+            <div class="activity-name">Eyelock Booth — 30 Seconds of Chemistry</div>
+            <div class="activity-meta">candle-lit mini booth · guided eye contact</div>
+          </div>
+          <div class="activity-pill">pg13</div>
+        </li>
+
+        <li class="activity-card primary" data-activity="taste-your-type">
+          <div class="activity-card-main">
+            <div class="activity-name">Taste Your Type — Wine &amp; Personality Pairing Bar</div>
+            <div class="activity-meta">palette chemistry · guided pairings</div>
+          </div>
+          <div class="activity-pill">featured 💋</div>
+        </li>
+
+        <li class="activity-card" data-activity="compliment-bar">
+          <div class="activity-card-main">
+            <div class="activity-name">The Compliment Currency Bar</div>
+            <div class="activity-meta">compliment tokens · soft introductions</div>
+          </div>
+          <div class="activity-pill">social</div>
+        </li>
+
+        <li class="activity-card" data-activity="locked-questions">
+          <div class="activity-card-main">
+            <div class="activity-name">Locked Questions — If You Answer, I Answer</div>
+            <div class="activity-meta">sealed prompts · shared story trading</div>
+          </div>
+          <div class="activity-pill">deep talk</div>
+        </li>
+
+        <li class="activity-card" data-activity="whisper">
+          <div class="activity-card-main">
+            <div class="activity-name">Mira Whisper Earbud Intro</div>
+            <div class="activity-meta">live scripted intros · anxiety-free approaches</div>
+          </div>
+          <div class="activity-pill">add-on</div>
+        </li>
+
+        <li class="activity-card" data-activity="polaroid">
+          <div class="activity-card-main">
+            <div class="activity-name">Polaroid Luxury Portrait Corner</div>
+            <div class="activity-meta">arch backdrop · keepsake portrait</div>
+          </div>
+          <div class="activity-pill">souvenir 📸</div>
+        </li>
+      </ul>
+
+      <!-- Activity Detail: Taste Your Type -->
+      <div class="detail-view active" id="tasteYourTypeDetail">
+        <div class="detail-heading-row">
+          <div>
+            <div class="detail-title">Taste Your Type</div>
+            <div class="detail-tagline">Wine &amp; Personality Pairing Bar · Zomaland Delhi</div>
+          </div>
+          <div class="chip-soft">Luxury, PG13, Hosted by Mira</div>
+        </div>
+
+        <div class="detail-grid">
+          <div>
+            <div class="detail-block-title">How it works</div>
+            <div class="detail-text">
+              Guests share three traits that describe how they love, flirt and show up in a room.
+              Mira matches them to a wine note <em>and</em> a stranger nearby with a similar profile —
+              turning tasting notes into conversation starters.
+              <ul>
+                <li>Check in at the pairing bar &amp; fill your three-trait card.</li>
+                <li>Mira reveals your wine archetype and introduces you to your flavour twin.</li>
+                <li>Walk away with a story, not just a tasting menu.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div>
+            <div class="detail-block-title">Personality pairings ✨</div>
+            <div class="table">
+              <div class="table-header">
+                <div>Personality</div>
+                <div>Wine</div>
+                <div>Result</div>
+              </div>
+              <div class="table-row">
+                <div>Reliable</div>
+                <div class="table-cell-muted">Merlot</div>
+                <div>Comfortable, slow-burn chemistry.</div>
+              </div>
+              <div class="table-row">
+                <div>Adventurous</div>
+                <div class="table-cell-muted">Zinfandel</div>
+                <div>Spicy, high-energy chemistry.</div>
+              </div>
+              <div class="table-row">
+                <div>Flirtatious</div>
+                <div class="table-cell-muted">Rosé</div>
+                <div>Playful, sunlit chemistry.</div>
+              </div>
+              <div class="table-row">
+                <div>Intense</div>
+                <div class="table-cell-muted">Malbec</div>
+                <div>Magnetic, late-night chemistry.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="souvenir-box">
+          <span>Souvenir</span>
+          <div class="souvenir-quote">
+            “My type tastes like Rosé — playful, a little dangerous, and impossible to forget.”
+          </div>
+          <div>Each guest leaves with a personalised pairing card — a tiny, gold-edged receipt of their vibe. 💎</div>
+        </div>
+
+        <div class="detail-footer">
+          <div class="detail-meta">
+            Limited slots per evening · 21+ only · Zomaland, Delhi · Hosted inside the Qurkle Lounge.
+          </div>
+          <button class="btn-primary" id="rsvpButton" type="button">
+            <span>✨</span> RSVP to Taste Your Type
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-empty" id="comingSoonMessage" style="display:none;">
+        Choose an upcoming location from the left to see when Mira brings Qurkle to your favourite festival.
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>© 2025 Qurkle Labs · All rights reserved.</div>
+    <div class="footer-right">
+      <span>✨</span>
+      <span>Designed for people who date with intention.</span>
+    </div>
+  </footer>
+</div>
+
+<!-- RSVP MODAL -->
+<div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" aria-label="Close">
+      ×
+    </button>
+    <div class="modal-eyebrow">Qurkle × Zomaland 2025</div>
+    <div class="modal-title" id="modalTitle">RSVP received 💌</div>
+    <div class="modal-body">
+      Thank you for participating in <span>Qurkle × Zomaland 2025</span>.<br/><br/>
+      Your event tickets for <strong>“Taste Your Type — Wine &amp; Personality Pairing Bar”</strong>
+      will be sent to your <strong>Qurkle registered mobile number</strong> via SMS and in-app notification.
+    </div>
+    <div class="modal-footer">
+      <div>Dress code: date-night chic.</div>
+      <div>Mira will handle the conversation — you just show up.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Location switching (only Zomaland has detailed content for now)
+  const locationCards = document.querySelectorAll(".location-card");
+  const activitiesPanel = document.getElementById("activitiesPanel");
+  const zomalandActivities = document.getElementById("zomalandActivities");
+  const detailView = document.getElementById("tasteYourTypeDetail");
+  const comingSoonMessage = document.getElementById("comingSoonMessage");
+
+  locationCards.forEach(card => {
+    card.addEventListener("click", () => {
+      locationCards.forEach(c => c.classList.remove("active"));
+      card.classList.add("active");
+
+      const loc = card.getAttribute("data-location");
+      if (loc === "zomaland") {
+        zomalandActivities.style.display = "flex";
+        detailView.classList.add("active");
+        comingSoonMessage.style.display = "none";
+        activitiesPanel.querySelector(".panel-title").textContent = "Zomaland · Mira x Qurkle";
+        activitiesPanel.querySelector(".panel-subtitle").textContent = "Signature chemistry experiences ✨";
+      } else {
+        zomalandActivities.style.display = "none";
+        detailView.classList.remove("active");
+        comingSoonMessage.style.display = "block";
+        activitiesPanel.querySelector(".panel-title").textContent = card.querySelector(".location-name").textContent;
+        activitiesPanel.querySelector(".panel-subtitle").textContent = "Programming schedule will be revealed soon.";
+      }
+    });
+  });
+
+  // Activity cards: only Taste Your Type opens detail (others could be extended later)
+  const activityCards = document.querySelectorAll(".activity-card");
+  activityCards.forEach(card => {
+    card.addEventListener("click", () => {
+      const activity = card.getAttribute("data-activity");
+      if (activity !== "taste-your-type") return;
+
+      activityCards.forEach(c => c.classList.remove("primary"));
+      card.classList.add("primary");
+      detailView.classList.add("active");
+      detailView.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
+  // RSVP modal
+  const rsvpButton = document.getElementById("rsvpButton");
+  const modalBackdrop = document.getElementById("modalBackdrop");
+  const modalClose = document.getElementById("modalClose");
+
+  function openModal() {
+    modalBackdrop.classList.add("active");
+    modalBackdrop.setAttribute("aria-hidden", "false");
+  }
+
+  function closeModal() {
+    modalBackdrop.classList.remove("active");
+    modalBackdrop.setAttribute("aria-hidden", "true");
+  }
+
+  rsvpButton.addEventListener("click", openModal);
+  modalClose.addEventListener("click", closeModal);
+  modalBackdrop.addEventListener("click", (e) => {
+    if (e.target === modalBackdrop) {
+      closeModal();
+    }
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModal();
+  });
+</script>
+</body>
+</html>
